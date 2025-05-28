@@ -84,8 +84,8 @@
         </div>
         
         <div class="input-group">
-            <label for="alphaSlider">Alpha (Opacity): <span class="alpha-value" id="alphaValue">ff</span></label>
-            <input type="range" id="alphaSlider" min="0" max="255" value="255">
+            <label for="alphaSlider">Alpha (Opacity): <span class="alpha-value" id="alphaValue">100%</span></label>
+            <input type="range" id="alphaSlider" min="0" max="100" value="100">
         </div>
         
         <div class="result">
@@ -120,22 +120,22 @@
             // Get current color
             const color = colorPicker.value;
             
-            // Get alpha value and convert to hex
-            const alphaDecimal = parseInt(alphaSlider.value);
+            // Get alpha value as percentage and convert to hex
+            const alphaPercent = parseInt(alphaSlider.value);
+            const alphaDecimal = Math.round((alphaPercent / 100) * 255);
             const alphaHex = alphaDecimal.toString(16).padStart(2, '0');
             
             // Update displays
             hexInput.value = color;
-            alphaValue.textContent = alphaHex;
+            alphaValue.textContent = alphaPercent + '%';
             
             // Calculate KML color
             const kmlColor = toKmlColor(color, alphaHex);
             kmlColorDiv.textContent = kmlColor;
             
             // Update preview with alpha
-            const alphaPercent = (alphaDecimal / 255).toFixed(2);
             colorPreview.style.backgroundColor = color;
-            colorPreview.style.opacity = alphaPercent;
+            colorPreview.style.opacity = alphaPercent / 100;
         }
         
         // Event listeners
