@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGB to KML Color Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="color"], input[type="text"], input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="color"] {
+            height: 50px;
+            cursor: pointer;
+        }
+        .alpha-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .kml-color {
+            font-size: 24px;
+            font-family: monospace;
+            color: #2196F3;
+            margin: 10px 0;
+        }
+        .color-preview {
+            width: 100%;
+            height: 50px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RGB to KML Color Converter</h1>
+        
+        <div class="input-group">
+            <label for="colorPicker">Choose Color:</label>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
+        
+        <div class="input-group">
+            <label for="hexInput">Or Enter Hex Color:</label>
+            <input type="text" id="hexInput" placeholder="#000000" value="#000000">
+        </div>
+        
+        <div class="input-group">
+            <label for="alphaSlider">Alpha (Opacity): <span class="alpha-value" id="alphaValue">ff</span></label>
+            <input type="range" id="alphaSlider" min="0" max="255" value="255">
+        </div>
+        
+        <div class="result">
+            <h2>KML Color (AABBGGRR):</h2>
+            <div class="kml-color" id="kmlColor">ff000000</div>
+            <div class="color-preview" id="colorPreview"></div>
+        </div>
+    </div>
+
+    <script>
+        function toKmlColor(color = "#000000", alpha = "ff") {
+            // Remove # if present
+            color = color.replace('#', '');
+            
+            // Extract RGB components
+            const rr = color.substring(0, 2);
+            const gg = color.substring(2, 4);
+            const bb = color.substring(4, 6);
+            
+            // Return in KML format: AABBGGRR
+            return alpha + bb + gg + rr;
+        }
+        
+        function updateColor() {
+            const colorPicker = document.getElementById('colorPicker');
+            const hexInput = document.getElementById('hexInput');
+            const alphaSlider = document.getElementById('alphaSlider');
+            const alphaValue = document.getElementById('alphaValue');
+            const kmlColorDiv = document.getElementById('kmlColor');
+            const colorPreview = document.getElementById('colorPreview');
+            
+            // Get current color
+            const color = colorPicker.value;
+            
+            // Get alpha value and convert to hex
+            const alphaDecimal = parseInt(alphaSlider.value);
+            const alphaHex = alphaDecimal.toString(16).padStart(2, '0');
+            
+            // Update displays
+            hexInput.value = color;
+            alphaValue.textContent = alphaHex;
+            
+            // Calculate KML color
+            const kmlColor = toKmlColor(color, alphaHex);
+            kmlColorDiv.textContent = kmlColor;
+            
+            // Update preview with alpha
+            const alphaPercent = (alphaDecimal / 255).toFixed(2);
+            colorPreview.style.backgroundColor = color;
+            colorPreview.style.opacity = alphaPercent;
+        }
+        
+        // Event listeners
+        document.getElementById('colorPicker').addEventListener('input', updateColor);
+        
+        document.getElementById('hexInput').addEventListener('input', function(e) {
+            let value = e.target.value;
+            if (!value.startsWith('#')) {
+                value = '#' + value;
+            }
+            if (/^#[0-9A-F]{6}$/i.test(value)) {
+                document.getElementById('colorPicker').value = value;
+                updateColor();
+            }
+        });
+        
+        document.getElementById('alphaSlider').addEventListener('input', updateColor);
+        
+        // Initialize
+        updateColor();
+    </script>
+</body>
+</html>
